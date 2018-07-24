@@ -75,7 +75,9 @@ class Worker : public ForeignWorker {
 	}
 };
 
-typedef int16_t key_t;
+#if !__linux
+	typedef int16_t key_t;
+#endif
 
 static uint32_t jenkings_one_at_a_time(const std::pair<uint8_t, bool>* key, size_t sz) {
 	size_t p = 0; uint32_t hash = 0;
@@ -137,7 +139,7 @@ static int32_t HotKeyThread(void* arg) {
 				for (std::pair<key_t, bool> k : hk.second.keys) {
 					bool isBound = k.second;
 					bool isPressed = isKeyDown(k.first);
-					
+
 					if ((isBound && !isPressed) ||
 						(!isBound && isPressed))
 						allPressed = false;
@@ -301,7 +303,7 @@ std::vector<std::pair<key_t, bool>> StringToKeys(std::string keystr, v8::Local<v
 		std::make_pair("ArrowUp", VK_UP), std::make_pair("ArrowLeft", VK_LEFT),
 		std::make_pair("ArrowRight", VK_RIGHT), std::make_pair("ArrowDown", VK_DOWN),
 
-	#else
+	#elif !__linux
 		std::make_pair("Escape", VC_ESCAPE),
 		std::make_pair("F1", VC_F1),
 		std::make_pair("F2", VC_F2),
@@ -525,5 +527,3 @@ void UnregisterHotkeysJS(const v8::FunctionCallbackInfo<v8::Value>& args) {
 	std::unique_lock<std::mutex> ulock(gThreadData.mtx);
 	gThreadData.hotkeys.clear();
 }
-
-

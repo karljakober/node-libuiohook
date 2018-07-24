@@ -11,6 +11,7 @@ IF(WIN32)
 ELSEIF(APPLE)
 	SET(libExtension ".dylib")
 ELSE()
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
     SET(libExtension ".so")
 ENDIF()
 
